@@ -7,6 +7,7 @@ max_iter = 100000
 batch_size = 64 
 noise_size = 100
 switch_threshold=1
+real_score_threshold=0.9
 stddev_scheme = [ii*0.001 for ii in range(100,0,-10)]
 
 tf.reset_default_graph()
@@ -68,7 +69,7 @@ with tf.Session() as sess:
     for ii in range(max_iter):
         rib = sess.run(real_image_batch)
         nb= sess.run(noise_batch)
-        scheme_index = -1#ii//1000 if ii < 10000 else -1
+        scheme_index = ii//1000 if ii < 10000 else -1
         if train_d:
             real_score,fake_score,_,dLoss,gLoss = sess.run([m_real_score,m_fake_score,d_trainer,d_loss,g_loss],
                 feed_dict={real_image:rib, inptG:nb,
@@ -77,7 +78,7 @@ with tf.Session() as sess:
             real_score,fake_score,_,dLoss,gLoss = sess.run([m_real_score,m_fake_score,g_trainer,d_loss,g_loss],
                 feed_dict={real_image:rib, inptG:nb,
                     gn_stddev:stddev_scheme[scheme_index], training:True})
-        if dLoss > gLoss and dLoss-gLoss > switch_threshold: 
+        if dLoss-gLoss > switch_threshold or real_score < real_score_threshold: 
             train_d = True
         else: train_d = False
         
