@@ -4,3 +4,5 @@
 * [数据集地址: Extra data](https://drive.google.com/file/d/1tpW7ZVNosXsIAWu8-f5EpwtF3ls3pb79/view)
 * 跑data.py生成tfrecord，需要改路径
 * 跑train.py进行训练，需要修改路径
+
+* 一些经验和记录在[我的博客](https://www.jianshu.com/p/d32134293fff)
