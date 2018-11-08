@@ -4,7 +4,9 @@ import datetime, pdb
 
 d_pretrain_iter = 0
 max_iter = 100000
-k_step = 5
+d_k_step = 15
+g_k_step = 5
+show_interval = 50 
 batch_size = 64 
 noise_size = 100
 switch_threshold=1
@@ -78,27 +80,25 @@ with tf.Session() as sess:
             writer.add_summary(summary,ii)
         #pdb.set_trace()
     train_d = True
-    for ii in range(max_iter):
+    ii = 0
+    while True:
         rib = sess.run(real_image_batch)
         nb= sess.run(noise_batch)
         nb_show = sess.run(noise_batch_show) 
         scheme_index = ii//(1000*scheme_step) if ii < 10000*scheme_step else -1
-        if train_d:
-            real_score,fake_score,_,dLoss,gLoss = sess.run([m_real_score,m_fake_score,d_trainer,d_loss,g_loss],
-                feed_dict={real_image:rib, inptG:nb,
+        for jj in range(d_k_step):
+            sess.run(d_trainer, feed_dict={real_image:rib, inptG:nb,
                     gn_stddev:stddev_scheme[scheme_index], training:True})
-        else:
-            real_score,fake_score,_,dLoss,gLoss = sess.run([m_real_score,m_fake_score,g_trainer,d_loss,g_loss],
-                feed_dict={real_image:rib, inptG:nb,
+        for kk in range(g_k_step):
+            sess.run(g_trainer, feed_dict={real_image:rib, inptG:nb, 
                     gn_stddev:stddev_scheme[scheme_index], training:True})
-        if dLoss-gLoss > switch_threshold or real_score < real_score_threshold: 
-            train_d = True
-        else: train_d = False
-        
-        if ii % 50== 0:
+        if ii % show_interval == 0:
+            real_score,fake_score,dLoss,gLoss = sess.run([m_real_score,m_fake_score,d_loss,g_loss],
+                feed_dict={real_image:rib, inptG:nb, gn_stddev:stddev_scheme[scheme_index], training:True})
             print('step ',ii,',dLoss is ',dLoss,',gLoss is ',gLoss,'train_d:',train_d,'real_score and fake score',real_score,fake_score)
             summary = sess.run(merged,{real_image:rib, inptG:nb, inptG_show:nb_show, gn_stddev:0, training:False})
             writer.add_summary(summary,ii)
+        ii += 1
     coord.request_stop()
     coord.join(thread)
 
