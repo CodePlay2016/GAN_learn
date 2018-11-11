@@ -58,13 +58,16 @@ def loss_fn_d(real_scores, fake_scores):
     https://www.cnblogs.com/sandy-t/p/7076401.html
     '''
     # d_loss = -tf.reduce_mean(tf.log(real_scores)) -tf.reduce_mean(tf.log(1-fake_scores))
-    d_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=real_scores, labels=tf.ones_like(real_scores)))
-    d_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=fake_scores, labels=tf.zeros_like(fake_scores)))
+    # d_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=real_scores, labels=tf.ones_like(real_scores)))
+    # d_loss_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=fake_scores, labels=tf.zeros_like(fake_scores)))
+    d_loss_real = tf.reduce_mean(tf.scalar_mul(-1, real_scores))
+    d_loss_fake = tf.reduce_mean(fake_scores)
     d_loss=d_loss_real + d_loss_fake
     return d_loss
 
 def loss_fn_g(fake_scores):
     # g_loss = -tf.reduce_mean(tf.log(fake_scores))
-    g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=fake_scores, labels=tf.ones_like(fake_scores)))
+    # g_loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=fake_scores, labels=tf.ones_like(fake_scores)))
+    g_loss = tf.reduce_mean(tf.scalar_mul(-1, fake_scores))
     return g_loss
 

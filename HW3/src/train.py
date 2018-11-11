@@ -4,8 +4,8 @@ import datetime, pdb
 
 d_pretrain_iter = 0
 max_iter = 100000
-d_k_step = 15
-g_k_step = 5
+d_k_step, g_k_step = 15, 5
+lr_d, lr_g = 0.0002, 0.0002
 show_interval = 50 
 batch_size = 64 
 noise_size = 100
@@ -14,9 +14,11 @@ real_score_threshold=0.95
 stddev_scheme = [ii*0.001 for ii in range(100,0,-10)]
 scheme_step = 10
 top_k = 5
+clip_value = [-0.01,0.01]
 
 tf.reset_default_graph()
 image_record = data.readRecord('../data/train.tfrecords')
+model_path = '../model/model.ckpt'
 
 ## define input
 real_image = tf.placeholder(tf.float32, (batch_size,64,64,3))
@@ -48,8 +50,11 @@ print([v.name for v in g_vars])
 # set trainer to train G and D seperately
 update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
 with tf.control_dependencies(update_ops):
-    d_trainer = tf.train.AdamOptimizer(0.0002).minimize(d_loss, var_list=d_vars)
-    g_trainer = tf.train.AdamOptimizer(0.0002).minimize(g_loss, var_list=g_vars)
+    # d_trainer = tf.train.AdamOptimizer(0.0002).minimize(d_loss, var_list=d_vars)
+    d_trainer = tf.train.RMSPropOptimizer(lr_d).minimize(d_loss, var_list=d_vars)
+    # g_trainer = tf.train.AdamOptimizer(0.0002).minimize(g_loss, var_list=g_vars)
+    g_trainer = tf.train.RMSPropOptimizer(lr_g).minimize(g_loss, var_list=g_vars)
+clip_d_op = [var.assign(tf.clip_by_value(var, clip_value[0],clip_value[1])) for var in d_vars]
 
 inptG_show = tf.placeholder(tf.float32, (top_k, noise_size))
 fake_image_show = net.generator(inptG_show, training)
@@ -63,6 +68,8 @@ logdir = "tensorboard/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "/
 merged = tf.summary.merge_all()
 ginit = tf.global_variables_initializer()
 linit = tf.global_variables_initializer()
+
+saver = tf.train.Saver()
 with tf.Session() as sess:
     writer = tf.summary.FileWriter(logdir, sess.graph)
     sess.run([ginit, linit])
@@ -82,14 +89,15 @@ with tf.Session() as sess:
     train_d = True
     ii = 0
     while True:
-        rib = sess.run(real_image_batch)
-        nb= sess.run(noise_batch)
         nb_show = sess.run(noise_batch_show) 
         scheme_index = ii//(1000*scheme_step) if ii < 10000*scheme_step else -1
         for jj in range(d_k_step):
+            rib = sess.run(real_image_batch)
+            nb= sess.run(noise_batch)
             sess.run(d_trainer, feed_dict={real_image:rib, inptG:nb,
                     gn_stddev:stddev_scheme[scheme_index], training:True})
         for kk in range(g_k_step):
+            nb= sess.run(noise_batch)
             sess.run(g_trainer, feed_dict={real_image:rib, inptG:nb, 
                     gn_stddev:stddev_scheme[scheme_index], training:True})
         if ii % show_interval == 0:
@@ -98,6 +106,7 @@ with tf.Session() as sess:
             print('step ',ii,',dLoss is ',dLoss,',gLoss is ',gLoss,'train_d:',train_d,'real_score and fake score',real_score,fake_score)
             summary = sess.run(merged,{real_image:rib, inptG:nb, inptG_show:nb_show, gn_stddev:0, training:False})
             writer.add_summary(summary,ii)
+            saver.save(sess=sess, save_path=model_path)
         ii += 1
     coord.request_stop()
     coord.join(thread)
