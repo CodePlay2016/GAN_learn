@@ -33,7 +33,7 @@ def discriminator(inpt,gn_stddev, training=True):
 def generator(inpt,training=True):
     channels = 16
     with tf.variable_scope('gen',reuse=tf.AUTO_REUSE):
-        out = tf.layers.dense(inpt, channels*8*16*16, activation=tf.nn.relu)
+        out = tf.layers.dense(inpt, channels*8*16*16)
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out  = tf.reshape(out, [-1,16,16,channels*8])
         

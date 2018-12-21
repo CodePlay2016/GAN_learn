@@ -4,14 +4,14 @@ import datetime, pdb
 
 d_pretrain_iter = 0
 max_iter = 100000
-d_k_step, g_k_step = 15, 5
+d_k_step, g_k_step = 5, 1
 lr_d, lr_g = 0.0002, 0.0002
 show_interval = 50 
 batch_size = 64 
 noise_size = 100
 switch_threshold=1
 real_score_threshold=0.95
-stddev_scheme = [ii*0.001 for ii in range(100,0,-10)]
+stddev_scheme = [ii*0.001 for ii in range(100,0,-1)]
 scheme_step = 10
 top_k = 5
 clip_value = [-0.01,0.01]
@@ -41,6 +41,19 @@ m_fake_score = tf.reduce_mean(fake_scores)
 d_loss = net.loss_fn_d(real_scores, fake_scores)
 g_loss = net.loss_fn_g(fake_scores)
 
+# WGAN-GP gradient penalty
+# https://github.com/changwoolee/WGAN-GP-tensorflow/blob/master/model.py
+epsilon = tf.random_uniform(
+				shape=[batch_size, 1, 1, 1],
+				minval=0.,
+				maxval=1.)
+X_hat = real_image + epsilon * (fake_image - real_image)
+D_X_hat = net.discriminator(X_hat, gn_stddev=gn_stddev)
+grad_D_X_hat = tf.gradients(D_X_hat, [X_hat])[0]
+slopes = tf.sqrt(tf.reduce_sum(tf.square(grad_D_X_hat)))
+gradient_penalty = tf.reduce_mean((slopes - 1.) ** 2)
+d_loss = d_loss + 10.0 * gradient_penalty
+
 tvars = tf.trainable_variables()
 d_vars = [var for var in tvars if 'dis' in var.name]
 g_vars = [var for var in tvars if 'gen' in var.name]
@@ -50,19 +63,18 @@ print([v.name for v in g_vars])
 # set trainer to train G and D seperately
 update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
 with tf.control_dependencies(update_ops):
-    # d_trainer = tf.train.AdamOptimizer(0.0002).minimize(d_loss, var_list=d_vars)
-    d_trainer = tf.train.RMSPropOptimizer(lr_d).minimize(d_loss, var_list=d_vars)
-    # g_trainer = tf.train.AdamOptimizer(0.0002).minimize(g_loss, var_list=g_vars)
-    g_trainer = tf.train.RMSPropOptimizer(lr_g).minimize(g_loss, var_list=g_vars)
-clip_d_op = [var.assign(tf.clip_by_value(var, clip_value[0],clip_value[1])) for var in d_vars]
+    d_trainer = tf.train.AdamOptimizer(lr_d).minimize(d_loss, var_list=d_vars)
+    # d_trainer = tf.train.RMSPropOptimizer(lr_d).minimize(d_loss, var_list=d_vars)
+    g_trainer = tf.train.AdamOptimizer(lr_g).minimize(g_loss, var_list=g_vars)
+    # g_trainer = tf.train.RMSPropOptimizer(lr_g).minimize(g_loss, var_list=g_vars)
+# clip_d_op = [var.assign(tf.clip_by_value(var, clip_value[0],clip_value[1])) for var in d_vars]
 
 inptG_show = tf.placeholder(tf.float32, (top_k, noise_size))
 fake_image_show = net.generator(inptG_show, training)
 # add summaries
-tf.summary.scalar('Generator_loss', g_loss)
-tf.summary.scalar('Discriminator_loss', d_loss)
-# topk_images = tf.gather(images_for_tensorboard,topk_index)
-# print(topk_images.get_shape().as_list())
+tf.summary.scalar("Discriminator_loss", d_loss)
+tf.summary.scalar("Generator_loss", g_loss)
+tf.summary.scalar("Gradient_penalty", gradient_penalty)
 tf.summary.image('Generated_images', fake_image_show, top_k)
 logdir = "tensorboard/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "/"
 merged = tf.summary.merge_all()

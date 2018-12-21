@@ -1,6 +1,9 @@
 import tensorflow as tf
 from PIL import Image
 import os
+HEIGHT = 64
+WIDTH = 64
+CHANNEL = 3
 
 def _bytes_feature(value):
     """
@@ -42,12 +45,20 @@ def readRecord(recordName):
 
     image = features["image_raw"]
     image = tf.decode_raw(image, tf.uint8)
-    print('image_record shape before reshape', image.get_shape().as_list())
-    image = tf.reshape(image,[64,64,3])
-    image = tf.cast(image, tf.float32) * (1. / 255) - 0.5
-    print('image_record shape after reshape', image.get_shape().as_list())
+    print('image_record shape before process', image.get_shape().as_list())
+    image = preprocess(image)
+    print('image_record shape after process', image.get_shape().as_list())
     return image
 
+def preprocess(image):
+    image = tf.image.random_flip_left_right(image)
+    image = tf.image.random_brightness(image, max_delta = 0.1)
+    image = tf.image.random_contrast(image, lower = 0.9, upper = 1.1)
+    size = [HEIGHT, WIDTH]
+    image = tf.image.resize_images(image, size)
+    image.set_shape([HEIGHT,WIDTH,CHANNEL])
+    image = tf.cast(image, tf.float32) * (1. / 255) - 0.5
+    return image
 
 def get_batch_image(data, batch_size, shuffle=True):
     '''
