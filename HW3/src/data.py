@@ -44,7 +44,7 @@ def readRecord(recordName):
     })
 
     image = features["image_raw"]
-    image = tf.image.decode_raw(image, tf.uint8)
+    image = tf.decode_raw(image, tf.uint8)
     image = preprocess(image)
     return image
 
