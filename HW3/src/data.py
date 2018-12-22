@@ -45,17 +45,17 @@ def readRecord(recordName):
 
     image = features["image_raw"]
     image = tf.image.decode_jpeg(image, tf.uint8)
-    print('image_record shape before process', image.get_shape().as_list())
     image = preprocess(image)
-    print('image_record shape after process', image.get_shape().as_list())
     return image
 
 def preprocess(image):
     image = tf.image.random_flip_left_right(image)
     image = tf.image.random_brightness(image, max_delta = 0.1)
     image = tf.image.random_contrast(image, lower = 0.9, upper = 1.1)
+    print('image_record shape before process', image.get_shape().as_list())
     size = [HEIGHT, WIDTH]
     image = tf.image.resize_images(image, size)
+    print('image_record shape after process', image.get_shape().as_list())
     image.set_shape([HEIGHT,WIDTH,CHANNEL])
     image = tf.cast(image, tf.float32) * (1. / 255) - 0.5
     return image
