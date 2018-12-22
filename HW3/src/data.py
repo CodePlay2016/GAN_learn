@@ -44,7 +44,7 @@ def readRecord(recordName):
     })
 
     image = features["image_raw"]
-    image = tf.image.decode_jpeg(image, tf.uint8)
+    image = tf.image.decode_raw(image, tf.uint8)
     image = preprocess(image)
     return image
 
@@ -56,6 +56,7 @@ def preprocess(image):
     size = [HEIGHT, WIDTH]
     image = tf.image.resize_images(image, size)
     print('image_record shape after process', image.get_shape().as_list())
+    image = tf.reshape(image,[64,64,3])
     # image.set_shape([HEIGHT,WIDTH,CHANNEL])
     image = tf.cast(image, tf.float32) * (1. / 255) - 0.5
     return image
