@@ -76,6 +76,7 @@ tf.summary.scalar("Discriminator_loss", d_loss)
 tf.summary.scalar("Generator_loss", g_loss)
 tf.summary.scalar("Gradient_penalty", gradient_penalty)
 tf.summary.image('Generated_images', fake_image_show, top_k)
+tf.summary.image('original_images', real_image, top_k)
 logdir = "../tensorboard/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "/"
 merged = tf.summary.merge_all()
 ginit = tf.global_variables_initializer()
