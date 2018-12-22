@@ -1,6 +1,6 @@
 import tensorflow as tf
 from PIL import Image
-import os
+import os, pdb
 HEIGHT = 64
 WIDTH = 64
 CHANNEL = 3
@@ -21,6 +21,7 @@ def generate_tfrecord(source_path):
     for imageName in os.listdir(img_dir):
         image = Image.open(os.path.join(img_dir,imageName))
         image = image.resize((64,64),Image.BILINEAR)
+        pdb.set_trace()
         image_raw = image.tobytes() # convert image to binary format
         example = tf.train.Example(features = tf.train.Features(feature = {
             "image_raw": _bytes_feature(image_raw),
