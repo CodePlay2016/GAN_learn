@@ -21,7 +21,6 @@ def generate_tfrecord(source_path):
     for imageName in os.listdir(img_dir):
         image = Image.open(os.path.join(img_dir,imageName))
         image = image.resize((64,64),Image.BILINEAR)
-        pdb.set_trace()
         image_raw = image.tobytes() # convert image to binary format
         example = tf.train.Example(features = tf.train.Features(feature = {
             "image_raw": _bytes_feature(image_raw),
@@ -57,7 +56,7 @@ def preprocess(image):
     size = [HEIGHT, WIDTH]
     image = tf.image.resize_images(image, size)
     print('image_record shape after process', image.get_shape().as_list())
-    image.set_shape([HEIGHT,WIDTH,CHANNEL])
+    # image.set_shape([HEIGHT,WIDTH,CHANNEL])
     image = tf.cast(image, tf.float32) * (1. / 255) - 0.5
     return image
 
