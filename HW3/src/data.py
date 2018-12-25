@@ -1,6 +1,7 @@
 import tensorflow as tf
 from PIL import Image
 import os, pdb
+
 HEIGHT = 64
 WIDTH = 64
 CHANNEL = 3
