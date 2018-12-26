@@ -24,7 +24,6 @@ def discriminator(inpt,gn_stddev, training=True):
         out = tf.layers.conv2d(out, filters=fs*8, kernel_size=4, strides=2, padding='SAME',kernel_initializer=tf.truncated_normal_initializer(stddev=0.02))
         out = tf.nn.leaky_relu(out)
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
-        print(out.get_shape().as_list())
 
         out = tf.layers.flatten(out)
         out = tf.layers.dense(out, 1,kernel_initializer=tf.truncated_normal_initializer(stddev=0.02))
