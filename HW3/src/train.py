@@ -4,7 +4,7 @@ import datetime, pdb
 
 d_pretrain_iter = 0
 max_iter = 100000
-d_k_step, g_k_step = 3, 3
+d_k_step, g_k_step = 10, 10
 lr_d, lr_g = 0.0002, 0.0002
 show_interval = 50 
 batch_size = 64 
