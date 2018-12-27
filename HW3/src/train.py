@@ -59,8 +59,8 @@ tvars = tf.trainable_variables()
 d_vars = [var for var in tvars if 'dis' in var.name]
 g_vars = [var for var in tvars if 'gen' in var.name]
 
-print([v.name for v in d_vars])
-print([v.name for v in g_vars])
+# print([v.name for v in d_vars])
+# print([v.name for v in g_vars])
 # set trainer to train G and D seperately
 update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
 with tf.control_dependencies(update_ops):
@@ -113,7 +113,7 @@ with tf.Session() as sess:
         for kk in range(g_k_step):
             rib = sess.run(real_image_batch)
             nb= sess.run(noise_batch)
-            sess.run(g_trainer, feed_dict={inptG:nb, 
+            sess.run(g_trainer, feed_dict={real_image:rib, inptG:nb, 
                     gn_stddev:stddev_scheme[scheme_index], training:True})
         if ii % show_interval == 0:
             real_score,fake_score,dLoss,gLoss = sess.run([m_real_score,m_fake_score,d_loss,g_loss],

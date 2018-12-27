@@ -36,7 +36,7 @@ def generator(inpt,training=True):
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out  = tf.reshape(out, [-1,16,16,channels*8])
 
-        out = tf.layers.conv2d(out, channels, 4, padding='SAME')
+        out = tf.layers.conv2d(out, channels, 5, padding='SAME')
         out = tf.nn.leaky_relu(out)
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         
@@ -48,7 +48,10 @@ def generator(inpt,training=True):
         out = tf.nn.leaky_relu(out)
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
 
-        out = tf.layers.conv2d(out, 3, 4,padding='SAME')
+        out = tf.layers.conv2d(out, channels, 3, padding='SAME')
+        out = tf.nn.leaky_relu(out)
+        out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
+        out = tf.layers.conv2d(out, 3, 3,padding='SAME')
         out = tf.nn.tanh(out)
     return out
     
