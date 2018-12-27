@@ -4,7 +4,7 @@ import datetime, pdb
 
 d_pretrain_iter = 0
 max_iter = 100000
-d_k_step, g_k_step = 10, 5
+d_k_step, g_k_step = 15, 5
 lr_d, lr_g = 0.0002, 0.0002
 show_interval = 50 
 batch_size = 64 
@@ -12,7 +12,7 @@ noise_size = 100
 switch_threshold=1
 real_score_threshold=0.95
 stddev_scheme = [ii*0.001 for ii in range(10,0,-1)] #[0.01,0.009,...,0.001]
-stddev_scheme = [0]*10
+stddev_scheme = [0.01]*10
 scheme_step = 1000
 top_k = 5
 clip_value = [-0.01,0.01]
