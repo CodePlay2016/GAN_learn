@@ -111,6 +111,7 @@ with tf.Session() as sess:
             sess.run(d_trainer, feed_dict={real_image:rib, inptG:nb,
                     gn_stddev:stddev_scheme[scheme_index], training:True})
         for kk in range(g_k_step):
+            rib = sess.run(real_image_batch)
             nb= sess.run(noise_batch)
             sess.run(g_trainer, feed_dict={real_image:rib, inptG:nb, 
                     gn_stddev:stddev_scheme[scheme_index], training:True})
