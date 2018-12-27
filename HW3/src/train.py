@@ -113,7 +113,7 @@ with tf.Session() as sess:
         for kk in range(g_k_step):
             rib = sess.run(real_image_batch)
             nb= sess.run(noise_batch)
-            sess.run(g_trainer, feed_dict={real_image:rib, inptG:nb, 
+            sess.run(g_trainer, feed_dict={inptG:nb, 
                     gn_stddev:stddev_scheme[scheme_index], training:True})
         if ii % show_interval == 0:
             real_score,fake_score,dLoss,gLoss = sess.run([m_real_score,m_fake_score,d_loss,g_loss],
