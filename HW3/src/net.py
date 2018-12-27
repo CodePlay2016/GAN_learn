@@ -27,7 +27,7 @@ def discriminator(inpt,gn_stddev, training=True):
 
         out = tf.layers.flatten(out)
         out = tf.layers.dense(out, 1,kernel_initializer=tf.truncated_normal_initializer(stddev=0.02))
-        out = tf.nn.sigmoid(out)
+        # out = tf.nn.sigmoid(out)
     return out
 
 def generator(inpt,training=True):
@@ -50,10 +50,10 @@ def generator(inpt,training=True):
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out = tf.nn.leaky_relu(out)
 
-        out = tf.layers.conv2d(out, channels, 3, padding='SAME')
-        out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
-        out = tf.nn.leaky_relu(out)
-        out = tf.layers.conv2d(out, 3, 3,padding='SAME')
+        # out = tf.layers.conv2d(out, channels, 4, padding='SAME')
+        # out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
+        # out = tf.nn.leaky_relu(out)
+        out = tf.layers.conv2d(out, 3, 4,padding='SAME')
         out = tf.nn.tanh(out)
     return out
     
