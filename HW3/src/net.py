@@ -33,10 +33,11 @@ def generator(inpt,training=True):
     channels = 32
     with tf.variable_scope('gen',reuse=tf.AUTO_REUSE):
         out = tf.layers.dense(inpt, channels*8*16*16)
+        out = tf.nn.relu(out)
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out  = tf.reshape(out, [-1,16,16,channels*8])
 
-        out = tf.layers.conv2d(out, channels, 5, padding='SAME')
+        out = tf.layers.conv2d(out, channels*8, 5, padding='SAME')
         out = tf.nn.leaky_relu(out)
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         
