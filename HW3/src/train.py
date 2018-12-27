@@ -4,9 +4,9 @@ import datetime, pdb
 
 d_pretrain_iter = 0
 max_iter = 100000
-d_k_step, g_k_step = 1, 1
+d_k_step, g_k_step = 5, 5
 lr_d, lr_g = 0.0002, 0.0002
-show_interval = 50 
+show_interval = 100 // ((d_k_step + g_k_step) // 2)
 batch_size = 64 
 noise_size = 100
 switch_threshold=1
