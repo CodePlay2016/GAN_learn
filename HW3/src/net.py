@@ -9,19 +9,19 @@ def discriminator(inpt,gn_stddev, training=True):
     with tf.variable_scope('dis',reuse=tf.AUTO_REUSE):
         channels = 32
         inpt = inpt+tf.random_normal(shape=tf.shape(inpt), mean=0.0, stddev=gn_stddev, dtype=tf.float32)
-        out = tf.layers.conv2d(inpt, filters=channels, kernel_size=5, strides=1, padding='SAME') 
-        out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
-        out = tf.nn.leaky_relu(out)
-
-        out = tf.layers.conv2d(out, filters=channels*2, kernel_size=5, strides=2, padding='SAME')
-        out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
-        out = tf.nn.leaky_relu(out)
-
-        out = tf.layers.conv2d(out, filters=channels*4, kernel_size=5, strides=2, padding='SAME')
+        out = tf.layers.conv2d(inpt, filters=channels*4, kernel_size=5, strides=1, padding='SAME') 
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out = tf.nn.leaky_relu(out)
 
         out = tf.layers.conv2d(out, filters=channels*8, kernel_size=5, strides=2, padding='SAME')
+        out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
+        out = tf.nn.leaky_relu(out)
+
+        out = tf.layers.conv2d(out, filters=channels*16, kernel_size=5, strides=2, padding='SAME')
+        out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
+        out = tf.nn.leaky_relu(out)
+
+        out = tf.layers.conv2d(out, filters=channels*32, kernel_size=5, strides=2, padding='SAME')
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out = tf.nn.leaky_relu(out)
 
