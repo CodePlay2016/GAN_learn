@@ -36,7 +36,7 @@ def generator(inpt,training=True):
         out = tf.layers.dense(inpt, channels*32*8*8)
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out = tf.nn.relu(out)
-        out  = tf.reshape(out, [-1,8,8,channels*32])
+        out  = tf.reshape(out, [-1,8,8,channels*32]) # (8,8,1024)
 
         # out = tf.layers.conv2d(out, channels*8, 5, padding='SAME')
         # out = tf.nn.leaky_relu(out)
@@ -44,19 +44,15 @@ def generator(inpt,training=True):
         
         out = tf.layers.conv2d_transpose(out, channels*16, 4, 2, padding='SAME')
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
-        out = tf.nn.leaky_relu(out)
+        out = tf.nn.leaky_relu(out) # (16,16,512)
 
         out = tf.layers.conv2d_transpose(out, channels*8, 4, 2, padding='SAME')
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
-        out = tf.nn.leaky_relu(out)
+        out = tf.nn.leaky_relu(out) # (32,32,256)
 
         out = tf.layers.conv2d_transpose(out, channels*4, 4, 2, padding='SAME')
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
-        out = tf.nn.leaky_relu(out)
-
-        out = tf.layers.conv2d_transpose(out, channels*2, 4, 2, padding='SAME')
-        out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
-        out = tf.nn.leaky_relu(out)
+        out = tf.nn.leaky_relu(out) # (64,64,128)
 
         # out = tf.layers.conv2d(out, channels, 4, padding='SAME')
         # out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
