@@ -36,7 +36,7 @@ def generator(inpt,training=True):
         out = tf.layers.dense(inpt, channels*32*8*8)
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out = tf.nn.relu(out)
-        out  = tf.reshape(out, [-1,16,16,channels*32])
+        out  = tf.reshape(out, [-1,8,8,channels*32])
 
         # out = tf.layers.conv2d(out, channels*8, 5, padding='SAME')
         # out = tf.nn.leaky_relu(out)
