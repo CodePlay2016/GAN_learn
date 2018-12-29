@@ -100,7 +100,6 @@ with tf.Session() as sess:
             summary = sess.run(merged,{real_image:rib, inptG:finp})
             writer.add_summary(summary,ii)
         #pdb.set_trace()
-    train_d = True
     ii = 0
     while True:
         nb_show = sess.run(noise_batch_show) 

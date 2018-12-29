@@ -59,7 +59,7 @@ def preprocess(image):
     image = tf.image.resize_images(image, size)
     print('image_record shape after process', image.get_shape().as_list())
     # image.set_shape([HEIGHT,WIDTH,CHANNEL])
-    image = tf.cast(image, tf.float32) * (1. / 255) - 0.5
+    image = (tf.cast(image, tf.float32) * (1. / 255) - 0.5) * 2 # scale image to [-1,1]
     return image
 
 def get_batch_image(data, batch_size, shuffle=True):

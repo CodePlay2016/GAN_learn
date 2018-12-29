@@ -7,21 +7,21 @@ def discriminator(inpt,gn_stddev, training=True):
             gn_stddev: a scalar, the stddev for the gaussian noise added to the input image,
     '''
     with tf.variable_scope('dis',reuse=tf.AUTO_REUSE):
-        channels = 32
+        channels = 128
         inpt = inpt+tf.random_normal(shape=tf.shape(inpt), mean=0.0, stddev=gn_stddev, dtype=tf.float32)
-        out = tf.layers.conv2d(inpt, filters=channels*4, kernel_size=5, strides=1, padding='SAME') 
+        out = tf.layers.conv2d(inpt, filters=channels, kernel_size=5, strides=1, padding='SAME') 
+        out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
+        out = tf.nn.leaky_relu(out)
+
+        out = tf.layers.conv2d(out, filters=channels*2, kernel_size=5, strides=2, padding='SAME')
+        out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
+        out = tf.nn.leaky_relu(out)
+
+        out = tf.layers.conv2d(out, filters=channels*4, kernel_size=5, strides=2, padding='SAME')
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out = tf.nn.leaky_relu(out)
 
         out = tf.layers.conv2d(out, filters=channels*8, kernel_size=5, strides=2, padding='SAME')
-        out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
-        out = tf.nn.leaky_relu(out)
-
-        out = tf.layers.conv2d(out, filters=channels*16, kernel_size=5, strides=2, padding='SAME')
-        out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
-        out = tf.nn.leaky_relu(out)
-
-        out = tf.layers.conv2d(out, filters=channels*32, kernel_size=5, strides=2, padding='SAME')
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out = tf.nn.leaky_relu(out)
 
@@ -31,33 +31,33 @@ def discriminator(inpt,gn_stddev, training=True):
     return out
 
 def generator(inpt,training=True):
-    channels = 32
+    channels = 128
     with tf.variable_scope('gen',reuse=tf.AUTO_REUSE):
-        out = tf.layers.dense(inpt, channels*32*8*8)
+        out = tf.layers.dense(inpt, 8*channels*8*8)
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out = tf.nn.relu(out)
-        out  = tf.reshape(out, [-1,8,8,channels*32]) # (8,8,1024)
+        out  = tf.reshape(out, [-1,8,8,channels*8]) # (8,8,1024)
 
         # out = tf.layers.conv2d(out, channels*8, 5, padding='SAME')
         # out = tf.nn.leaky_relu(out)
         # out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         
-        out = tf.layers.conv2d_transpose(out, channels*16, 4, 2, padding='SAME')
+        out = tf.layers.conv2d_transpose(out, channels*4, 5, 2, padding='SAME')
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out = tf.nn.leaky_relu(out) # (16,16,512)
 
-        out = tf.layers.conv2d_transpose(out, channels*8, 4, 2, padding='SAME')
+        out = tf.layers.conv2d_transpose(out, channels*2, 5, 2, padding='SAME')
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out = tf.nn.leaky_relu(out) # (32,32,256)
 
-        out = tf.layers.conv2d_transpose(out, channels*4, 4, 2, padding='SAME')
+        out = tf.layers.conv2d_transpose(out, channels, 5, 2, padding='SAME')
         out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         out = tf.nn.leaky_relu(out) # (64,64,128)
 
         # out = tf.layers.conv2d(out, channels, 4, padding='SAME')
         # out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         # out = tf.nn.leaky_relu(out)
-        out = tf.layers.conv2d(out, 3, 4,padding='SAME')
+        out = tf.layers.conv2d(out, 3, 3,padding='SAME')
         out = tf.nn.tanh(out)
     return out
     
