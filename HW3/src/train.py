@@ -11,8 +11,8 @@ batch_size = 64
 noise_size = 100
 switch_threshold=1
 real_score_threshold=0.95
-stddev_scheme = [ii*0.001 for ii in range(10,0,-1)] #[0.01,0.009,...,0.001]
-stddev_scheme = [0.001]*10
+stddev_scheme = [ii*0.0001 for ii in range(100,0,-1)] #[0.01,0.009,...,0.001]
+# stddev_scheme = [0.001]*10
 scheme_step = 1000
 top_k = 5
 clip_value = [-0.01,0.01]
@@ -117,7 +117,7 @@ with tf.Session() as sess:
         if ii % show_interval == 0:
             real_score,fake_score,dLoss,gLoss = sess.run([m_real_score,m_fake_score,d_loss,g_loss],
                 feed_dict={real_image:rib, inptG:nb, gn_stddev:stddev_scheme[scheme_index], training:True})
-            print('step ',ii,',dLoss is ',dLoss,',gLoss is ',gLoss,'train_d:',train_d,'real_score and fake score',real_score,fake_score)
+            print('step ',ii,',dLoss is ',dLoss,',gLoss is ',gLoss,'real_score and fake score',real_score,fake_score)
             summary = sess.run(merged,{real_image:rib, inptG:nb, inptG_show:nb_show, gn_stddev:0, training:False})
             writer.add_summary(summary,ii)
             saver.save(sess=sess, save_path=model_path)
