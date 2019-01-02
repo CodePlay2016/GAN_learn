@@ -4,14 +4,15 @@ import datetime, pdb
 
 d_pretrain_iter = 0
 max_iter = 100000
-d_k_step, g_k_step = 5, 5
+d_k_step, g_k_step = 1, 1
 lr_d, lr_g = 0.0002, 0.0002
 show_interval = 100 // ((d_k_step + g_k_step) // 2)
+save_interval = 200
 batch_size = 64 
 noise_size = 100
 switch_threshold=1
 real_score_threshold=0.95
-stddev_scheme = [ii*0.0001 for ii in range(100,0,-1)] #[0.01,0.009,...,0.001]
+stddev_scheme = [ii*0.0001 for ii in range(100,0,-1)]+[0] #[0.01,0.009,...,0.001]
 # stddev_scheme = [0.001]*10
 scheme_step = 1000
 top_k = 5
@@ -19,6 +20,7 @@ clip_value = [-0.01,0.01]
 
 tf.reset_default_graph()
 image_record = data.readRecord('../data/train.tfrecords')
+train_from_checkpoint = True
 model_path = '../model/model.ckpt'
 
 ## define input
@@ -86,7 +88,11 @@ linit = tf.global_variables_initializer()
 saver = tf.train.Saver()
 with tf.Session() as sess:
     writer = tf.summary.FileWriter(logdir, sess.graph)
-    sess.run([ginit, linit])
+    if train_from_checkpoint:
+        saver.restore(sess, tf.train.latest_checkpoint(model_path))
+        graph = tf.get_default_graph()
+    else:
+        sess.run([ginit, linit])
     coord = tf.train.Coordinator()
     thread = tf.train.start_queue_runners(sess=sess, coord=coord)
     print('start')
@@ -101,6 +107,9 @@ with tf.Session() as sess:
             writer.add_summary(summary,ii)
         #pdb.set_trace()
     ii = 0
+    #TODO
+    # 1. add checkpoint saving
+    # 2. change training scheme (1 vs 1) cause G loss gets constantly big
     while True:
         nb_show = sess.run(noise_batch_show) 
         scheme_index = ii//scheme_step if ii < len(stddev_scheme)*scheme_step else -1
@@ -120,6 +129,8 @@ with tf.Session() as sess:
             print('step ',ii,',dLoss is ',dLoss,',gLoss is ',gLoss,'real_score and fake score',real_score,fake_score)
             summary = sess.run(merged,{real_image:rib, inptG:nb, inptG_show:nb_show, gn_stddev:0, training:False})
             writer.add_summary(summary,ii)
+            
+        if ii % save_interval == 0:
             saver.save(sess=sess, save_path=model_path)
         ii += 1
     coord.request_stop()
