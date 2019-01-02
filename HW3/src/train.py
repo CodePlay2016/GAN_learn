@@ -21,7 +21,7 @@ clip_value = [-0.01,0.01]
 tf.reset_default_graph()
 image_record = data.readRecord('../data/train.tfrecords')
 train_from_checkpoint = True
-model_path = '../model/model.ckpt'
+model_path = '../model/'
 
 ## define input
 real_image = tf.placeholder(tf.float32, (batch_size,64,64,3))
@@ -131,7 +131,7 @@ with tf.Session() as sess:
             writer.add_summary(summary,ii)
             
         if ii % save_interval == 0:
-            saver.save(sess=sess, save_path=model_path)
+            saver.save(sess=sess, save_path=model_path+'model.ckpt')
         ii += 1
     coord.request_stop()
     coord.join(thread)
