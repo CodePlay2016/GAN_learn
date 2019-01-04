@@ -19,9 +19,9 @@ top_k = 5
 clip_value = [-0.01,0.01]
 
 tf.reset_default_graph()
-image_record = data.readRecord('../data/train.tfrecords')
+image_record = data.readRecord('../data/train_clean.tfrecords')
 train_from_checkpoint = True
-model_path = '../model/'
+
 
 ## define input
 real_image = tf.placeholder(tf.float32, (batch_size,64,64,3))
@@ -80,7 +80,9 @@ tf.summary.scalar("Generator_loss", g_loss)
 tf.summary.scalar("Gradient_penalty", gradient_penalty)
 tf.summary.image('Generated_images', fake_image_show, top_k)
 tf.summary.image('original_images', real_image, top_k)
-logdir = "../tensorboard/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + "/"
+time_info = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+logdir = "../tensorboard/" + time_info + "/"
+model_path = "../model/" + time_info + "/"
 merged = tf.summary.merge_all()
 ginit = tf.global_variables_initializer()
 linit = tf.global_variables_initializer()

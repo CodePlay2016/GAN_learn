@@ -75,7 +75,7 @@ def get_batch_noise(dimension, batch_size):
     return noise
 
 if __name__ == '__main__':
-    img_path = '../data/'
+    img_path = '/Users/hufangquan/code/GAN_learn/HW3/data/'
     generate_tfrecord(img_path)
     image = readRecord(os.path.join(img_path,'train.tfrecords'))
     batch = get_batch_image([image], 10)
