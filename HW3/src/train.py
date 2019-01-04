@@ -21,6 +21,7 @@ clip_value = [-0.01,0.01]
 tf.reset_default_graph()
 image_record = data.readRecord('../data/train_clean.tfrecords')
 train_from_checkpoint = True
+checkpoint_dir = "../model/"
 
 
 ## define input
@@ -91,7 +92,7 @@ saver = tf.train.Saver()
 with tf.Session() as sess:
     writer = tf.summary.FileWriter(logdir, sess.graph)
     if train_from_checkpoint:
-        saver.restore(sess, tf.train.latest_checkpoint(model_path))
+        saver.restore(sess, tf.train.latest_checkpoint(checkpoint_dir))
         graph = tf.get_default_graph()
     else:
         sess.run([ginit, linit])
