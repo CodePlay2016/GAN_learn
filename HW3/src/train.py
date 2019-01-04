@@ -4,8 +4,8 @@ import datetime, pdb
 
 d_pretrain_iter = 0
 max_iter = 100000
-d_k_step, g_k_step = 1, 1
-lr_d, lr_g = 0.0001, 0.0001
+d_k_step, g_k_step = 5, 5
+lr_d, lr_g = 0.0002, 0.0002
 show_interval = 100 // ((d_k_step + g_k_step) // 2)
 save_interval = 200
 batch_size = 64 
@@ -20,7 +20,7 @@ clip_value = [-0.01,0.01]
 
 tf.reset_default_graph()
 image_record = data.readRecord('../data/train_clean.tfrecords')
-train_from_checkpoint = True
+train_from_checkpoint = False
 checkpoint_dir = "../model/"
 
 
