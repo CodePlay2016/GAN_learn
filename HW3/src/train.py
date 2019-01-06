@@ -20,7 +20,7 @@ clip_value = [-0.01,0.01]
 
 tf.reset_default_graph()
 image_record = data.readRecord('../data/train_clean.tfrecords')
-train_from_checkpoint = False
+train_from_checkpoint = True
 checkpoint_dir = "../model/20190104-222900/"
 
 
