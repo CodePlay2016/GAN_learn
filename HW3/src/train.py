@@ -5,7 +5,7 @@ import datetime, pdb
 d_pretrain_iter = 0
 max_iter = 100000
 d_k_step, g_k_step = 5, 5
-lr_d, lr_g = 5e-5, 5e-5
+lr_d, lr_g = 2e-4, 2e-4
 show_interval = 100 // ((d_k_step + g_k_step) // 2)
 save_interval = 200
 batch_size = 64 
@@ -17,7 +17,7 @@ clip_value = [-0.01,0.01]
 
 tf.reset_default_graph()
 image_record = data.readRecord('../data/train_clean.tfrecords')
-train_from_checkpoint = True
+train_from_checkpoint = False
 checkpoint_dir = "../model/20190106-090041/"
 stddev_scheme = [0]*10 if train_from_checkpoint else [ii*0.0001 for ii in range(100,0,-1)]+[0] #[0.01,0.009,...,0.001]
 scheme_step = 1000
@@ -82,7 +82,8 @@ tf.summary.image('Generated_images', fake_image_show, top_k)
 tf.summary.image('original_images', real_image, top_k)
 time_info = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 logdir = "../tensorboard/" + time_info + "/"
-model_path = "../model/" + time_info + "/"
+fine_tune_msg = "ft" if train_from_checkpoint else ""
+model_path = "../model/" + time_info + fine_tune_msg + "/"
 merged = tf.summary.merge_all()
 ginit = tf.global_variables_initializer()
 linit = tf.global_variables_initializer()
