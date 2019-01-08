@@ -57,7 +57,7 @@ def generator(inpt,training=True):
         # out = tf.layers.conv2d(out, channels, 4, padding='SAME')
         # out = tf.layers.batch_normalization(out,epsilon=1e-5,training=training)
         # out = tf.nn.leaky_relu(out)
-        out = tf.layers.conv2d(out, 1, 3,padding='SAME')
+        out = tf.layers.conv2d(out, 3, 1,padding='SAME')
         out = tf.nn.tanh(out)
     return out
     

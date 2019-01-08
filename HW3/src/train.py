@@ -82,7 +82,7 @@ tf.summary.image('Generated_images', fake_image_show, top_k)
 tf.summary.image('original_images', real_image, top_k)
 time_info = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 logdir = "../tensorboard/" + time_info + "/"
-fine_tune_msg = "ft" if train_from_checkpoint else ""
+fine_tune_msg = "_ft_from_"+checkpoint_dir.split('/')[-2] if train_from_checkpoint else ""
 model_path = "../model/" + time_info + fine_tune_msg + "/"
 merged = tf.summary.merge_all()
 ginit = tf.global_variables_initializer()
