@@ -19,8 +19,8 @@ tf.reset_default_graph()
 image_record = data.readRecord('../data/train_clean.tfrecords')
 train_from_checkpoint = False
 checkpoint_dir = "../model/20190106-090041/"
-stddev_scheme = [0]*10 if train_from_checkpoint else [ii*0.0001 for ii in range(100,0,-1)]+[0] #[0.01,0.009,...,0.001]
-scheme_step = 1000
+stddev_scheme = [0]*10 if train_from_checkpoint else [ii*1e-5 for ii in range(50,0,-1)]+[0] #[0.01,0.009,...,0.001]
+scheme_step = 2000
 
 
 ## define input
