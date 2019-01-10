@@ -66,8 +66,8 @@ g_vars = [var for var in tvars if 'gen' in var.name]
 # set trainer to train G and D seperately
 update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
 with tf.control_dependencies(update_ops):
-    # d_trainer = tf.train.AdamOptimizer(lr_d).minimize(d_loss, var_list=d_vars)
-    d_trainer = tf.train.RMSPropOptimizer(lr_d).minimize(d_loss, var_list=d_vars)
+    d_trainer = tf.train.AdamOptimizer(lr_d).minimize(d_loss, var_list=d_vars)
+    # d_trainer = tf.train.RMSPropOptimizer(lr_d).minimize(d_loss, var_list=d_vars)
     g_trainer = tf.train.AdamOptimizer(lr_g).minimize(g_loss, var_list=g_vars)
     # g_trainer = tf.train.RMSPropOptimizer(lr_g).minimize(g_loss, var_list=g_vars)
 # clip_d_op = [var.assign(tf.clip_by_value(var, clip_value[0],clip_value[1])) for var in d_vars]
