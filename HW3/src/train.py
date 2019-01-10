@@ -4,8 +4,8 @@ import datetime, pdb
 
 d_pretrain_iter = 0
 max_iter = 100000
-d_k_step, g_k_step = 5, 5
-lr_d, lr_g = 2e-4, 2e-4
+d_k_step, g_k_step = 1, 1
+lr_d, lr_g = 1e-4, 1e-4
 show_interval = 100 // ((d_k_step + g_k_step) // 2)
 save_interval = 200
 batch_size = 64 
@@ -17,9 +17,9 @@ clip_value = [-0.01,0.01]
 
 tf.reset_default_graph()
 image_record = data.readRecord('../data/train_clean.tfrecords')
-train_from_checkpoint = False
-checkpoint_dir = "../model/20190106-090041/"
-stddev_scheme = [0]*10 if train_from_checkpoint else [ii*1e-5 for ii in range(50,0,-1)]+[0] #[0.01,0.009,...,0.001]
+train_from_checkpoint = True
+checkpoint_dir = "../model/20190109-090711/"
+stddev_scheme = [0] if train_from_checkpoint else [1e-3]#[ii*1e-5 for ii in range(50,0,-1)]+[0] #[0.01,0.009,...,0.001]
 scheme_step = 2000
 
 
@@ -66,8 +66,8 @@ g_vars = [var for var in tvars if 'gen' in var.name]
 # set trainer to train G and D seperately
 update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
 with tf.control_dependencies(update_ops):
-    d_trainer = tf.train.AdamOptimizer(lr_d).minimize(d_loss, var_list=d_vars)
-    # d_trainer = tf.train.RMSPropOptimizer(lr_d).minimize(d_loss, var_list=d_vars)
+    # d_trainer = tf.train.AdamOptimizer(lr_d).minimize(d_loss, var_list=d_vars)
+    d_trainer = tf.train.RMSPropOptimizer(lr_d).minimize(d_loss, var_list=d_vars)
     g_trainer = tf.train.AdamOptimizer(lr_g).minimize(g_loss, var_list=g_vars)
     # g_trainer = tf.train.RMSPropOptimizer(lr_g).minimize(g_loss, var_list=g_vars)
 # clip_d_op = [var.assign(tf.clip_by_value(var, clip_value[0],clip_value[1])) for var in d_vars]
