@@ -18,7 +18,7 @@ clip_value = [-0.01,0.01]
 tf.reset_default_graph()
 image_record = data.readRecord('../data/train_clean.tfrecords')
 train_from_checkpoint = True
-checkpoint_dir = "../model/20190110-090118_from_20190109-090711/"
+checkpoint_dir = "../model/20190110-090118_ft_from_20190109-090711/"
 stddev_scheme = [0] if train_from_checkpoint else [1e-3]#[ii*1e-5 for ii in range(50,0,-1)]+[0] #[0.01,0.009,...,0.001]
 scheme_step = 2000
 
@@ -83,8 +83,8 @@ tf.summary.image('original_images', real_image, top_k)
 time_info = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
 logdir = "../tensorboard/" + time_info + "/"
 if train_from_checkpoint:
-    pre_data = checkpoint_dir.split('/')[-2].split('_ft_from_')[0]
-    fine_tune_msg = "_ft_from_" + pre_data
+    pre_data = checkpoint_dir.split('/')[-2].split('_from_')[0]
+    fine_tune_msg = "_from_" + pre_data
 else:
     fine_tune_msg = ""
 model_path = "../model/" + time_info + fine_tune_msg + "/"
